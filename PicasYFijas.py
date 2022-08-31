@@ -107,6 +107,54 @@ def modo1():
     result["state"]="disable"
 
 
+def modo2():
+    # Asigna el estado del numero_entry en normal
+    # recupera el contenido de las casillas "picas" y "fijas"
+    # posteriormente imprime el contenido de el arreglo de picas y fijas
+    numero_entry["state"] = "normal"
+    picas = picas_entry.get()
+    fijas = fijas_entry.get()
+    print(picas, fijas)
+
+    # Se invocan a las variables globales numero, valor_computador_contadormodo2
+    global numeros
+    global Valor_computador
+    global contadormodo2
+
+    # Se entra el primer if en el caso de que el valor sumado de picas y fijas sea menor a 4 significa que no se han encontrado todas las variables
+    # Además se necesita que el resultado dado por la computadora no sea igual a 4 ya que este sería un resultado ganador
+    if (int(picas) + int(fijas) <= 4) and not (int(picas) == 0 and int(fijas) == 4):
+
+        # Se abre un archivo en el que se va a escribir el resultado del intento dado por el computador
+        # en este se escribira el numero propuesto por el computador, junto al numero de picas y fijas obtenidas de ese numero, y el numero de intentos realizados hasta el momento
+        archivo = open("Resultados_picas_y_fijas.txt ", 'a')
+        archivo.write("Intento " + str(contadormodo2) + ": valor computador " + str(Valor_computador) + " picas " + str(
+            picas) + " fijas " + str(fijas) + "\n")
+        archivo.close()
+
+        # Ya que este número no es la respuestas se procede a borrarlo de las variables valor_computador y de la entrada
+        # A su vez este número se eliminará de la lista de posibles soluciones para que este no se repita
+        # Luego le asigna de manera aleatoria un número dentro de la lista de posibles soluciones a la variable valor_computador
+        # Finalmente se muestra la lista de posibles soluciones despues de su actualizacion
+        numero_entry.delete(0, tk.END)
+        numeros = eliminar_combinaciones(int(picas), int(fijas), numeros, Valor_computador)
+        Valor_computador = numeros[random.randint(0, len(numeros) - 1)]
+        mostrar_lista()
+
+        # Se reemplaza la variable de numero entry con el nuevo valor de la variable valor_computador
+        # se aumenta el contador modo 2 en 1
+        numero_entry.insert(0, Valor_computador)
+        contadormodo2 = contadormodo2 + 1
+
+    # En el caso de que el numero de fijas sea igual a 4 entonces el computador gano y se ingresa en el siguiente if
+    elif (int(picas) == 0 and int(fijas) == 4):
+
+        # Se le informa a el jugador mediante una nueva ventana que el computador gano, junto a los intentos realizados y el numero con el que gano
+        messagebox.showinfo("Fin del juego", "El computador gano con el número" + str(Valor_computador))
+    # Como ya se termino este modo de juego, se actualiza el estado de la variable numero_entry
+    numero_entry["state"] = "disable"
+
+
 def validar_numero_digitos(text, new_text):
     if len(new_text) > 4:
         return False
@@ -197,7 +245,7 @@ class App1(tk.Toplevel):
                 text='Cerrar',
                 command=self.destroy).pack()
 
-"""
+
 class App2(tk.Toplevel):
 
     def __init__(self, parent):
@@ -272,7 +320,7 @@ class App2(tk.Toplevel):
         ttk.Button(self,
                    text='Cerrar',
                    command=self.destroy).grid(row=5, column=0, columnspan=2)
-"""
+
 
 class Main(tk.Tk):
     def __init__(self):
